@@ -12,7 +12,13 @@ func (c *Cache) Add(key string, val []byte) {
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
-	return []byte{}, true
+	data, exists := c.cacheBody[key]
+
+	if exists {
+		return data.val, true
+	} else {
+		return []byte{}, false
+	}
 }
 
 func (c *Cache) reapLoop() {
