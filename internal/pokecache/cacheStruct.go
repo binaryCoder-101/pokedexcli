@@ -20,6 +20,6 @@ func NewCache(timeInterval time.Duration) *Cache {
 		cacheBody: make(map[string]cacheEntry),
 	}
 
-	cache.reapLoop()
+	go cache.reapLoop(timeInterval)
 	return cache
 }
