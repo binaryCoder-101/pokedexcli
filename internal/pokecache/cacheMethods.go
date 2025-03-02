@@ -5,6 +5,7 @@ import "time"
 func (c *Cache) Add(key string, val []byte) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
 	c.cacheBody[key] = cacheEntry{
 		createdAt: time.Now().UTC(),
 		val:       val,
@@ -21,6 +22,9 @@ func (c *Cache) Get(key string) ([]byte, bool) {
 }
 
 func (c *Cache) reapLoop(timeInterval time.Duration) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	ticker := time.NewTicker(timeInterval)
 	defer ticker.Stop()
 
