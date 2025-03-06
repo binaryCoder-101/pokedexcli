@@ -130,12 +130,14 @@ func responseData(url string) (locationAreaEndpointData, error) {
 	return configData, nil
 }
 
+// Displays the locations for a particular URL and updates the pagination state
 func displayLocationAreasUpdatePagination(urlInput *string, cfg *config) error {
 
 	respData, err := responseData(*urlInput)
 	if err != nil {
 		return err
 	}
+
 	locationResults := respData.Results
 
 	for _, locationResult := range locationResults {
