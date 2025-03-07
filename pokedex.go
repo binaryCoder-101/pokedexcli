@@ -2,11 +2,13 @@ package main
 
 import (
 	"bufio"
-	"encoding/json"
+	// "encoding/json"
 	"fmt"
-	"net/http"
+	// "net/http"
 	"os"
 	"strings"
+
+	"github.com/binaryCoder-101/pokedexcli/internal/pokeapi"
 )
 
 func startRepl(cfg *config) {
@@ -47,34 +49,13 @@ type cliCommand struct {
 	callback    func(*config) error
 }
 
-// Holds ststeful information about pagination
+// For holding stateful information about pagination
 type config struct {
-	prev *string
-	next *string
+	httpClient pokeapi.Client
+	prev       *string
+	next       *string
 }
 
-type locationAreaEndpointData struct {
-	Count    int               `json:"count"`
-	Next     *string           `json:"next"`
-	Previous *string           `json:"previous"`
-	Results  []locationResults `json:"results"`
-}
-
-type locationResults struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
-}
-
-//	type Config struct {
-//		Count     int    `json:"count"`
-//		Next     *string `json:"next"`
-//		Previous *string `json:"previous"`
-//		Results  []struct {
-//			Name string `json:"name"`
-//			URL  string `json:"url"`
-//		} `json:"results"`
-//	}
-//
 // Maps the command names to their name, description and callback
 func returnCommandMap() map[string]cliCommand {
 
@@ -110,30 +91,10 @@ func cleanInput(text string) []string {
 	return output
 }
 
-// Sends GET request and decodes the incoming data into a slice of "Config" struct
-func responseData(url string) (locationAreaEndpointData, error) {
-	res, err := http.Get(url)
-	if err != nil {
-		return locationAreaEndpointData{}, fmt.Errorf("error sending request : %w", err)
-	}
-
-	defer res.Body.Close()
-
-	configData := locationAreaEndpointData{}
-
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&configData)
-	if err != nil {
-		return locationAreaEndpointData{}, fmt.Errorf("error decoding response : %w", err)
-	}
-
-	return configData, nil
-}
-
 // Displays the locations for a particular URL and updates the pagination state
-func displayLocationAreasUpdatePagination(urlInput *string, cfg *config) error {
+func DisplayLocationAreasUpdatePagination(urlInput *string, cfg *config) error {
 
-	respData, err := responseData(*urlInput)
+	respData, err := cfg.httpClient.ResponseData(urlInput)
 	if err != nil {
 		return err
 	}

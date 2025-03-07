@@ -1,12 +1,16 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/binaryCoder-101/pokedexcli/internal/pokeapi"
+)
 
 func commandMapForward(cfg *config) error {
-	url := "https://pokeapi.co/api/v2/location-area/"
 
 	if cfg.next == nil && cfg.prev == nil {
-		err := displayLocationAreasUpdatePagination(&url, cfg)
+		url := pokeapi.BaseURL
+		err := DisplayLocationAreasUpdatePagination(&url, cfg)
 		if err != nil {
 			return err
 		}
@@ -14,7 +18,7 @@ func commandMapForward(cfg *config) error {
 	} else if cfg.next == nil && cfg.prev != nil {
 		return fmt.Errorf("last location area. Next location area not available")
 	} else {
-		err := displayLocationAreasUpdatePagination(cfg.next, cfg)
+		err := DisplayLocationAreasUpdatePagination(cfg.next, cfg)
 		if err != nil {
 			return err
 		}
@@ -30,7 +34,7 @@ func commandMapBackward(cfg *config) error {
 	} else if cfg.next != nil && cfg.prev == nil {
 		return fmt.Errorf("first location area. Previous location area not available")
 	} else {
-		err := displayLocationAreasUpdatePagination(cfg.prev, cfg)
+		err := DisplayLocationAreasUpdatePagination(cfg.prev, cfg)
 		if err != nil {
 			return err
 		}
