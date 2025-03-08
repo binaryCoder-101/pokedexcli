@@ -3,6 +3,7 @@ package pokeapi
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -26,24 +27,32 @@ import (
 // }
 
 // Sends GET request and decodes the incoming data into a slice of "Config" struct
-func (c *Client) ResponseData(urlInput *string) (locationAreaEndpointData, error) {
+func (c *Client) ResponseData(urlInput *string) ([]byte, error) {
 
 	req, err := http.NewRequest("GET", *urlInput, nil)
 	if err != nil {
-		return locationAreaEndpointData{}, fmt.Errorf("error making request")
+		return []byte{}, fmt.Errorf("error making request")
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return locationAreaEndpointData{}, fmt.Errorf("error fetching response")
+		return []byte{}, fmt.Errorf("error fetching response")
 	}
 
 	defer resp.Body.Close()
 
+	respData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, fmt.Errorf("error parsing response")
+	}
+
+	return respData, nil
+}
+
+func UnmarshalSliceOfBytes(respData []byte) (locationAreaEndpointData, error) {
 	locationAreas := locationAreaEndpointData{}
 
-	decoder := json.NewDecoder(resp.Body)
-	err = decoder.Decode(&locationAreas)
+	err := json.Unmarshal(respData, &locationAreas)
 	if err != nil {
 		return locationAreaEndpointData{}, fmt.Errorf("error decoding response")
 	}

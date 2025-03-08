@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/binaryCoder-101/pokedexcli/internal/pokeapi"
+	"github.com/binaryCoder-101/pokedexcli/internal/pokecache"
 )
 
 func startRepl(cfg *config) {
@@ -52,6 +53,7 @@ type cliCommand struct {
 // For holding stateful information about pagination
 type config struct {
 	httpClient pokeapi.Client
+	cache      *pokecache.Cache
 	prev       *string
 	next       *string
 }
@@ -93,20 +95,47 @@ func cleanInput(text string) []string {
 
 // Displays the locations for a particular URL and updates the pagination state
 func DisplayLocationAreasUpdatePagination(urlInput *string, cfg *config) error {
+	sliceofBytes := []byte{}
 
-	respData, err := cfg.httpClient.ResponseData(urlInput)
+	value, exists := cfg.cache.Get(*urlInput)
+	if exists {
+		sliceofBytes = value
+	} else {
+		respData, err := cfg.httpClient.ResponseData(urlInput)
+		if err != nil {
+			return err
+		}
+		sliceofBytes = respData
+		cfg.cache.Add(*urlInput, sliceofBytes)
+	}
+
+	locationResults, err := pokeapi.UnmarshalSliceOfBytes(sliceofBytes)
 	if err != nil {
 		return err
 	}
 
-	locationResults := respData.Results
-
-	for _, locationResult := range locationResults {
+	for _, locationResult := range locationResults.Results {
 		fmt.Println(locationResult.Name)
 	}
 
-	cfg.prev = respData.Previous
-	cfg.next = respData.Next
+	cfg.prev = locationResults.Previous
+	cfg.next = locationResults.Next
 
 	return nil
 }
+
+// respData, err := cfg.httpClient.ResponseData(urlInput)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	locationResults := respData.Results
+
+// 	for _, locationResult := range locationResults {
+// 		fmt.Println(locationResult.Name)
+// 	}
+
+// 	cfg.prev = respData.Previous
+// 	cfg.next = respData.Next
+
+// 	return nil
