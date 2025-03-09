@@ -47,7 +47,7 @@ func startRepl(cfg *config) {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 // For holding stateful information about pagination
@@ -77,6 +77,11 @@ func returnCommandMap() map[string]cliCommand {
 			description: "Displays names of previous 20 locations",
 			callback:    commandMapBackward,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Displays list of all Pokémon in a location area",
+			callback:    commandExplore,
+		},
 		"exit": {
 			name:        "exit",
 			description: "Exit the Pokedex",
@@ -95,7 +100,7 @@ func cleanInput(text string) []string {
 
 // Displays the locations for a particular URL and updates the pagination state
 func DisplayLocationAreasUpdatePagination(urlInput *string, cfg *config) error {
-	sliceofBytes := []byte{}
+	var sliceofBytes []byte
 
 	value, exists := cfg.cache.Get(*urlInput)
 	if exists {
@@ -109,33 +114,44 @@ func DisplayLocationAreasUpdatePagination(urlInput *string, cfg *config) error {
 		cfg.cache.Add(*urlInput, sliceofBytes)
 	}
 
-	locationResults, err := pokeapi.UnmarshalSliceOfBytes(sliceofBytes)
+	locationAreas, err := pokeapi.UnmarshalSliceOfBytesLocationAreas(sliceofBytes)
 	if err != nil {
 		return err
 	}
 
-	for _, locationResult := range locationResults.Results {
-		fmt.Println(locationResult.Name)
+	for _, locationArea := range locationAreas.Results {
+		fmt.Println(locationArea.Name)
 	}
 
-	cfg.prev = locationResults.Previous
-	cfg.next = locationResults.Next
+	cfg.prev = locationAreas.Previous
+	cfg.next = locationAreas.Next
 
 	return nil
 }
 
-// respData, err := cfg.httpClient.ResponseData(urlInput)
+// func DisplayPokemonNames(urlInput *string, cfg *config) error {
+// 	var sliceofBytes []byte
+
+// 	value, exists := cfg.cache.Get(*urlInput)
+// 	if exists {
+// 		sliceofBytes = value
+// 	} else {
+// 		respData, err := cfg.httpClient.ResponseData(urlInput)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		sliceofBytes = respData
+// 		cfg.cache.Add(*urlInput, sliceofBytes)
+// 	}
+
+// 	locationAreasDetails, err := pokeapi.UnmarshalSliceOfBytesLocationAreasDetails(sliceofBytes)
 // 	if err != nil {
 // 		return err
 // 	}
 
-// 	locationResults := respData.Results
-
-// 	for _, locationResult := range locationResults {
-// 		fmt.Println(locationResult.Name)
+// 	for _, locationAreasDetail := range locationAreasDetails.PokemonEncounters {
+// 		fmt.Println(locationAreasDetail.Pokemon.Name)
 // 	}
 
-// 	cfg.prev = respData.Previous
-// 	cfg.next = respData.Next
-
 // 	return nil
+// }

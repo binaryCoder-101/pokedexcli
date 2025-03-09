@@ -49,12 +49,23 @@ func (c *Client) ResponseData(urlInput *string) ([]byte, error) {
 	return respData, nil
 }
 
-func UnmarshalSliceOfBytes(respData []byte) (locationAreaEndpointData, error) {
+func UnmarshalSliceOfBytesLocationAreas(respData []byte) (locationAreaEndpointData, error) {
 	locationAreas := locationAreaEndpointData{}
 
 	err := json.Unmarshal(respData, &locationAreas)
 	if err != nil {
 		return locationAreaEndpointData{}, fmt.Errorf("error decoding response")
+	}
+
+	return locationAreas, nil
+}
+
+func UnmarshalSliceOfBytesLocationAreasDetails(respData []byte) (locationAreaDetails, error) {
+	locationAreas := locationAreaDetails{}
+
+	err := json.Unmarshal(respData, &locationAreas)
+	if err != nil {
+		return locationAreaDetails{}, fmt.Errorf("error decoding response")
 	}
 
 	return locationAreas, nil

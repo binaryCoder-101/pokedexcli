@@ -6,7 +6,7 @@ import (
 	"github.com/binaryCoder-101/pokedexcli/internal/pokeapi"
 )
 
-func commandMapForward(cfg *config) error {
+func commandMapForward(cfg *config, args ...string) error {
 
 	if cfg.next == nil && cfg.prev == nil {
 		url := pokeapi.BaseURL
@@ -27,7 +27,7 @@ func commandMapForward(cfg *config) error {
 
 }
 
-func commandMapBackward(cfg *config) error {
+func commandMapBackward(cfg *config, args ...string) error {
 
 	if cfg.next == nil && cfg.prev == nil {
 		return fmt.Errorf("no data")
