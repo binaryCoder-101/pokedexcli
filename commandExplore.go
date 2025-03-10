@@ -7,6 +7,13 @@ import (
 )
 
 func commandExplore(cfg *config, args ...string) error {
+	if len(args) > 1 {
+		return fmt.Errorf("too many arguments")
+	}
+	if len(args) < 1 {
+		return fmt.Errorf("too few arguments")
+	}
+
 	urlInput := pokeapi.BaseURL + args[0]
 	var sliceofBytes []byte
 

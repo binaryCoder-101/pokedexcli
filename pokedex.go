@@ -26,11 +26,13 @@ func startRepl(cfg *config) {
 		}
 
 		command := wordSlice[0]
+		params := wordSlice[1:]
+
 		found := 0
 		for key, value := range returnCommandMap() {
 			if command == key {
 				found = 1
-				err := value.callback(cfg)
+				err := value.callback(cfg, params...)
 				if err != nil {
 					fmt.Println("Error:", err)
 				}

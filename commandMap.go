@@ -7,6 +7,9 @@ import (
 )
 
 func commandMapForward(cfg *config, args ...string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("too many arguments")
+	}
 
 	if cfg.next == nil && cfg.prev == nil {
 		url := pokeapi.BaseURL
@@ -28,6 +31,9 @@ func commandMapForward(cfg *config, args ...string) error {
 }
 
 func commandMapBackward(cfg *config, args ...string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("too many arguments")
+	}
 
 	if cfg.next == nil && cfg.prev == nil {
 		return fmt.Errorf("no data")
