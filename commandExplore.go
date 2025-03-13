@@ -14,7 +14,8 @@ func commandExplore(cfg *config, args ...string) error {
 		return fmt.Errorf("too few arguments")
 	}
 
-	urlInput := pokeapi.BaseURL + args[0]
+	parameter := args[0]
+	urlInput := pokeapi.BaseURL + "/location-area/" + parameter
 	var sliceofBytes []byte
 
 	value, exists := cfg.cache.Get(urlInput)

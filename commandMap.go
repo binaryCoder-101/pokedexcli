@@ -12,7 +12,7 @@ func commandMapForward(cfg *config, args ...string) error {
 	}
 
 	if cfg.next == nil && cfg.prev == nil {
-		url := pokeapi.BaseURL
+		url := pokeapi.BaseURL + "/location-area"
 		err := DisplayLocationAreasUpdatePagination(&url, cfg)
 		if err != nil {
 			return err

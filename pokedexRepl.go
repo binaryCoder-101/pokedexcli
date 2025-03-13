@@ -10,6 +10,7 @@ import (
 
 	"github.com/binaryCoder-101/pokedexcli/internal/pokeapi"
 	"github.com/binaryCoder-101/pokedexcli/internal/pokecache"
+	"github.com/binaryCoder-101/pokedexcli/internal/pokedex"
 )
 
 func startRepl(cfg *config) {
@@ -54,10 +55,11 @@ type cliCommand struct {
 
 // For holding stateful information about pagination
 type config struct {
-	httpClient pokeapi.Client
-	cache      *pokecache.Cache
-	prev       *string
-	next       *string
+	httpClient      pokeapi.Client
+	pokedexDatabase *pokedex.PokedexStruct
+	cache           *pokecache.Cache
+	prev            *string
+	next            *string
 }
 
 // Maps the command names to their name, description and callback
@@ -81,8 +83,13 @@ func returnCommandMap() map[string]cliCommand {
 		},
 		"explore": {
 			name:        "explore",
-			description: "Displays list of all Pokémon in a location area",
+			description: "Displays list of all Pokémon in a location area passed as parameter",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Tries to catch a Pokémon passed as parameter",
+			callback:    commandCatch,
 		},
 		"exit": {
 			name:        "exit",

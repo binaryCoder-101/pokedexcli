@@ -61,12 +61,23 @@ func UnmarshalSliceOfBytesLocationAreas(respData []byte) (locationAreaEndpointDa
 }
 
 func UnmarshalSliceOfBytesLocationAreasDetails(respData []byte) (locationAreaDetails, error) {
-	locationAreas := locationAreaDetails{}
+	locationDetails := locationAreaDetails{}
 
-	err := json.Unmarshal(respData, &locationAreas)
+	err := json.Unmarshal(respData, &locationDetails)
 	if err != nil {
 		return locationAreaDetails{}, fmt.Errorf("error decoding response")
 	}
 
-	return locationAreas, nil
+	return locationDetails, nil
+}
+
+func UnmarshalSliceOfBytesPokemonDetails(respData []byte) (PokemonDetails, error) {
+	pokemonInfo := PokemonDetails{}
+
+	err := json.Unmarshal(respData, &pokemonInfo)
+	if err != nil {
+		return PokemonDetails{}, fmt.Errorf("error decoding response")
+	}
+
+	return pokemonInfo, nil
 }
